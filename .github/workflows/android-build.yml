@@ -10,27 +10,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Ambil source
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # 2️⃣ JDK 21 (WAJIB untuk AGP 8.9.x)
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
+      # 3️⃣ Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+      # 4️⃣ PAKSA BERSIH CACHE GRADLE (INI KUNCI)
+      - name: Clean Gradle cache
+        run: |
+          rm -rf ~/.gradle
+          chmod +x ./gradlew
 
+      # 5️⃣ Pastikan wrapper yang dipakai (harus 8.11.1)
       - name: Verify Gradle version
         run: ./gradlew --version
 
+      # 6️⃣ Build release APK
       - name: Build Release APK
-        run: ./gradlew :app:assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
 
+      # 7️⃣ Upload hasil APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
